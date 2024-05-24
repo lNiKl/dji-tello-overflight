@@ -1,8 +1,8 @@
 import cv2
 import numpy as np
-from djitellopy import Tello
+#from djitellopy import Tello
 import time
-from color_find import find_largest_quadrilateral
+from detected_form import detect_blue_square
 
 def avoid_obstacle(tello):
     tello.takeoff()
@@ -13,7 +13,7 @@ def avoid_obstacle(tello):
     
     while True:
         frame = frame_read.frame
-        blue_square = find_largest_quadrilateral(frame)
+        blue_square = detect_blue_square(frame)
         
         if blue_square:
             x, y, w, h = blue_square
