@@ -1,0 +1,66 @@
+import cv2
+import imutils
+
+def find_largest_quadrilateral(img, img_mask):
+    threshold = cv2.GaussianBlur(img_mask, (5,5),0) #размытие
+
+    edges = cv2.Canny(threshold, 25, 250)#контуты
+    
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (10,10)) #устранение мелких обьектов контуров
+    closed = cv2.morphologyEx(edges, cv2.MORPH_CLOSE, kernel)
+
+    cnts = cv2.findContours(closed, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+    cnts = imutils.grab_contours(cnts) #количество контуров
+    total = 0
+    for c in cnts:
+        area = cv2.contourArea(c)
+        if area < 5000:
+            continue
+        p = cv2.arcLength(c, True)
+        approx = cv2.approxPolyDP(c, 0.025 * p, True)
+
+        if len(approx) == 4:
+            cv2.drawContours(img, [approx], -1, (0, 255, ), 10)
+            total += 1
+            print(total)
+    return img,edges
+def find_con_by_HSV(img, color, kernel):
+    hsv_color = [ [165,  10,   0, 180, 255, 255],  # 0 - красный в сторону синего
+                  [  0,  10,   0,  15, 255, 255],  # 1 - красный в сторону зеленого
+                  [ 15,  10,   0,  45, 255, 255],  # 2 - желтый
+                  [ 45,  10,   0,  75, 255, 255],  # 3 - зеленый
+                  [ 75,  10,   0, 105, 255, 255],  # 4 - сиреневый
+                  [105,  10,   0, 135, 255, 255],  # 5 - синий
+                  [135,  10,   0, 165, 255, 255],  # 6 - фиолетовый
+                  [  0,   0,   0,   0, 255, 255],  # 7 - черный  ???
+                  [  0,  10,   0,   0, 255, 255] ] # 8 - белый   ???
+    col = hsv_color[color]
+    HSVmin = col[0], col[1], col[2]
+    HSVmax = col[3], col[4], col[5]
+    img_HSV = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    img_mask = cv2.inRange(img_HSV, HSVmin, HSVmax)
+    img_Line = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel, kernel), (-1, -1))
+    mask = cv2.morphologyEx(img_mask, cv2.MORPH_OPEN, img_Line)
+
+    return mask
+
+cap = cv2.VideoCapture(0)
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
+
+    hvs = find_con_by_HSV(frame, 6 , 5)
+    img,closed = find_largest_quadrilateral(frame, hvs)
+    
+    cv2.imshow("oblast", img)
+    cv2.imshow("maska", closed)
+    cv2.imshow("cvet", hvs)
+
+
+    if cv2.waitKey(1) == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
