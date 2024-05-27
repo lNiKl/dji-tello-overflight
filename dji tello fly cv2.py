@@ -34,15 +34,15 @@ def avoid_obstacle(tello):
                     tello.move_right(50)
                 time.sleep(2)
             
-            if abs(delta_y) > 50:
-                if delta_y > 0:
-                    tello.move_down(50)
-                else:
-                    tello.move_up(50)
-                time.sleep(2)
+            #if abs(delta_y) > 50:
+                #if delta_y > 0:
+                    #tello.move_down(50)
+                #else:
+                    #tello.move_up(50)
+                #time.sleep(2)
             
-            tello.move_forward(100)
-            time.sleep(2)
+            #tello.move_forward(100)
+            #time.sleep(2)
             break  # Завершение цикла после облета препятствия
         
         cv2.imshow('Tello Camera', frame)
