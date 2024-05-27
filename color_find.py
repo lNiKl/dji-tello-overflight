@@ -96,7 +96,7 @@ while True:
     cv2.imshow("cvet", hvs)
 
 
-    if cv2.waitKey(1) == ord("q"):
+    if cv2.waitKey(1) == ord('q'):
         break
 
 
