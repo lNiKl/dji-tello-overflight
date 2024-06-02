@@ -1,6 +1,7 @@
 import cv2
 import imutils
 import numpy as np
+import threading
 import time
 def find_largest_quadrilateral(img, img_mask):
     threshold = cv2.GaussianBlur(img_mask, (5,5),0) #размытие
